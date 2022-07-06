@@ -1,0 +1,27 @@
+apiVersion: apps/v1
+# Possible values e.g. Deployment, Pod, Service, Job, etc.
+kind: Deployment
+metadata:
+  name: second-app-deployment
+spec: # Configuration of the deployment
+  replicas: 1
+  selector:
+    matchLabels:
+      # The Pods whose labels match ALL the labels given here, should be controlled by this deployment 
+      app: second-app
+      tier: backend
+      app-type: node-app
+  template:
+    # kind: Pod <- no need to declare it since the type is always Pod
+    metadata:
+      labels:
+        # User-defined labels as key-value pairs
+        app: second-app
+        tier: backend
+        app-type: node-app
+    spec: # Specfication of the individual Pod
+      # Container or containers that should be part of the Pod 
+      containers:
+        - name: second-node-app
+          # Image(s) from dockerhub that should be used for the deployment 
+          image: murillocris/kub-first-app:latest

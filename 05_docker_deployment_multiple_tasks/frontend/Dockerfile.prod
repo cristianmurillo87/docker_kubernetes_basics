@@ -1,0 +1,27 @@
+# This image is used only for building
+# uses the alias of build to be referenced by the deploy image
+FROM node:14-alpine as build
+
+WORKDIR /app
+
+COPY package.json .
+
+RUN npm install
+
+COPY . .
+# Build the application
+RUN npm run build
+
+# This image is used for deploying
+FROM nginx:stable-alpine
+
+# Copy the final content from the build image
+# --from=build_image source target
+COPY --from=build /app/build /usr/share/nginx/html
+
+EXPOSE 80
+
+CMD ["nginx", "-g", "daemon off;"]
+
+
+

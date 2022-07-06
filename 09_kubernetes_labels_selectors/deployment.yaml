@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: second-app-deployment
+  labels:
+    group: example
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: second-app
+      tier: backend
+    # matchExpressions: 
+    # valid operators In, NotIn, Exists, DoesNotExist
+    #   - {key: app, operator: NotIn, values: [second-app, first-app]}
+  template:
+    metadata: 
+      labels:
+        app: second-app
+        tier: backend
+    spec: 
+      containers:
+        - name: second-node
+          image: academind/kub-first-app:2
+          # Force always pulling the image of the defined tag
+          imagePullPolicy: Always
+          # Used to configure how and when Kubernetes should check whether the container is up and running
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 8000
+            # The container will be checked every 10 seconds 
+            periodSeconds: 10
+            # Initial delay
+            initialDelaySeconds: 5
+        # - name: ...
+        #   image: ...

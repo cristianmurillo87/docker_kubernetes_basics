@@ -1,0 +1,18 @@
+# No need of core/v1, v1 is enough
+apiVersion: v1
+kind: Service
+metadata:
+  name: backend
+spec:
+  selector:
+    # Here, not all the labels from the Pod (in the deplyment.yaml) have to match with all of the labels defined here
+    app: second-app
+    tier: backend
+  ports:
+    # More than one port can be listed here
+    - protocol: 'TCP'
+      port: 80
+      targetPort: 8080
+  # ClusterIP, NodePort, LoadBalancer
+  type: LoadBalancer
+

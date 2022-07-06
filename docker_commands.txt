@@ -1,0 +1,166 @@
+# List containers
+docker ps
+
+# Run a new container
+# 3000:80 external port(in the pc): internal(in the container)
+docker run -p 3000:80 container_id
+
+# Assing a name to a container
+docker run -p 3000:80 -d --rm --name new_container_name container_id
+
+# Query the logs of a container
+docker logs -f container_id
+
+# Stop a container
+docker stop container_id
+
+# Start an existing container
+docker start container_id
+
+# Run a container in attached mode
+docker start -a container_id
+
+# Run a container in detached mode
+docker start -d container_id
+
+# Build an image from a Dockerfile
+docker build -t image_name:image_tag .
+
+# Build an image using a different context path
+# Context is the location of the Dockerfile and/or where the image is built
+docker build -t [-t image_name:image_tag] .[path/to/image_context]
+
+# Build an image using a custom Dockerfile
+docker build -f relative/path/Dockerfile_name [-t image_name:image_tag] .[context_path]
+
+# Build a specific target of a multi-target image
+docker build --target target_name [-f relative/path/Dockerfile_name] .
+
+# Interactive mode (allow to use the container's console)
+docker start -i container_id
+docker start -it container_id
+
+# Remove a container (stopped)
+docker rm container_id
+
+# Start a container and set it to be removed after stopped
+docker run -p external_port:internal_port -d --rm container_id
+
+# List images
+docker images
+
+# Remove images
+docker rmi iamge_id
+
+# Remove unused images
+docker image prune
+
+# Inspect an image
+docker image inspect image_id
+
+# Copy files to/from the container
+docker cp source destination
+
+# List existing volumes
+docker volumes ls
+
+# Run a container that uses a named volumes
+docker run [-p internal_port:external_port] [--name container_name] -v volume_name:volume_path [image_name:image_tags]
+
+# Set up a mount bind ($(pwd) = current working directory) 
+docker run -v volume_name:volume_path_container -v $(pwd):path_in_container -v path/for/optional/anonymous/volume[image_name:image_tags]
+
+# Set environment variables
+docker run -p 8000:3000 -e ENV_VARIABLE_NAME=variable_value --name container_name
+
+# Set environment variables file
+docker run -p 8000:3000 --env_file ./.env --name container_name
+
+# Set buildtime arguments
+docker build -t container_name:container_tag --build-arg ARGUMENT-NAME=argument_value .
+
+# Creating a network (must be created before using it)
+docker network create network_name
+
+# Run the containers defined in a compose file, (with -d it runs in detached mode)
+docker-compose up [-d]
+
+# Stop the containers defined in a compose file (with -v, volumes are deleted)
+docker-compose down [-v]
+
+# Force docker-compose to build custom images before starting the containers
+docker-compose up --build
+
+# Build images without starting a container
+docker-compose build
+
+# Run a command inside a container
+docker exec -it container_name command_to_run
+
+# Run a command in an utility container using docker
+docker run -it [-v external_path:internal_path] image_name command_to_run
+
+# Run a command in an utility container using docker-compose
+docker-compose run --rm container_name command_to_run
+
+
+# Kubernetes
+# Start a cluster
+# drivers can be one of virtualbox, docker, hyperv (windows)
+minikube start --driver=virtualbox
+
+# Check the status of the cluster
+minikube status
+
+# Open the Kubernetes dashboard
+minikube dashboard
+
+# Send instructions to the master node and the control plane of the cluster
+# Create a deployment object
+kubectl create deployment deployment_name --image=image_from_dockerhub
+
+# Delete a deployment
+kubectl delete deployment deployment_name
+
+# List deployments
+kubectl get deployments
+
+# List pods
+kubectl get pods
+
+# List services
+kubectl get services
+
+# Delete a services
+kubectl delete service service_name
+
+# Exposing a pod
+# ClusterIP -> uses the IP of the cluster (default), only reachable from inside the cluster
+# NodePort -> deployment should be exposed with the IP of the worker node on which is running (accessible from outside)
+# LoadBalancer -> evenly distributes incoming traffic accross all available pods (only available if the infrastucture # # supports it)
+kubectl expose deployment first-app --port port_number --type=LoadBalancer
+
+# Scale a deployment
+kubectl scale deployment/deployment_name --replicas=number_of_replicas
+
+# Update a deployment (deployments can only be updated if the updated image has a new tag)
+kubectl set image deployment/deployment_name old_image_name=new_image_name:new_tag
+
+# Rollback a deployment
+kubectl rollout undo deployment/deployment_name
+
+# Check the rollout status of a deployment
+kubectl rollout status deployment/deployment_name [--to-revision=revision_id]
+
+# Check out the deployment history
+kubectl rollout history deployment/deployment_name [--revision=revision_id]
+
+# Using a .yaml file (for creating or updating deployments, services, etc.)
+kubectl apply -f=name_of_file.yaml
+
+# Delete objects created using .yaml files 
+# -f=yaml_file_name.yaml can be given several times, if several objects are to be deleted
+kubectl delete -f=yaml_file_name.yaml 
+
+# Delete deployments and/or services by label
+kubectl delete -l deployments,services label_key=label_value

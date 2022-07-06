@@ -1,0 +1,51 @@
+version: '3.8'
+services:
+  mongodb:
+    image: 'mongo:4.2.18'
+    volumes:
+      - data:/data/db
+    # use environment to set the variables directly in the .yaml file
+    # environment:
+      # MONGO_INITDB_ROOT_USERNAME: cris
+      # MONGO_INITDB_ROOT_PASSWORD: secret
+      # if use dash (-) the equal sign (=) must be used
+      # - MONGO_INITDB_ROOT_USERNAME=cris
+    # use env_file if the variables are stored in a file
+    env_file:
+      - ./env/mongo.env
+  backend:
+    # shortest way
+    build: ./backend
+    # longest way (to be used if e.g. the docker file name is different to Dockerfile)
+    # build:
+    #   context: ./backend
+    #   dockerfile: Dockerfile
+    #   args:
+    #     - arg1=value1
+    ports:
+      - '80:80'
+    volumes:
+      - logs:/app/logs
+      # bind mount
+      - ./backend:/app
+      - /app/node_modules
+    env_file:
+      - ./env/backend.env
+    depends_on:
+      - mongodb
+  frontend:
+    build: ./frontend
+    ports:
+      - '3000:3000'
+    volumes:
+      - ./frontend/src:/app/src
+    # use stdin_open and tty to start the container in interactive mode (-it)
+    stdin_open: true
+    tty: true
+    depends_on:
+      - backend
+
+volumes:
+  # All named volumes must be declared here
+  data:
+  logs:
